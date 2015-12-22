@@ -94,6 +94,28 @@ class Channel(object):
         return ex
 
     @asyncio.coroutine
+    def get_exchange(self, name):
+        """
+        Get an existing :class:`Exchange` on the broker. Doesn't attempt to create it first.
+
+        This method is a :ref:`coroutine <coroutine>`.
+
+        :param str name: the name of the exchange.
+
+        :return: the :class:`Exchange` object.
+        """
+        if not VALID_EXCHANGE_NAME_RE.match(name):
+            raise ValueError(
+                "Invalid exchange name.\n"
+                "Valid names consist of letters, digits, hyphen, underscore, "
+                "period, or colon, and do not begin with 'amq.'")
+
+        ex = exchange.Exchange(
+            self.reader, self.synchroniser, self.sender, name, type=None, durable=None,
+            auto_delete=None, internal=None)
+        return ex
+
+    @asyncio.coroutine
     def declare_queue(self, name='', *, durable=True, exclusive=False,
                       auto_delete=False, passive=False,
                       nowait=False, arguments=None):
